@@ -95,11 +95,35 @@ BarWidget {
         width: root.vertical ? root.barSize : root.slot
         height: root.vertical ? root.slot : root.barSize
 
-        IconImage {
+        // The crop zooms the icon inside a clipped frame until its opaque
+        // square fills the frame.
+        Item {
           anchors.centerIn: parent
-          implicitSize: root.iconSize
-          source: root.iconFor(slotItem.modelData.appId)
+          width: root.iconSize
+          height: root.iconSize
+          clip: true
           opacity: slotItem.minimized ? 0.45 : 1
+
+          Image {
+            id: icon
+            readonly property string url: root.iconFor(slotItem.modelData.appId)
+            readonly property var crop: iconCrops.crops[url] || { x: 0, y: 0, side: 1 }
+            width: parent.width / crop.side
+            height: parent.height / crop.side
+            x: -crop.x * width
+            y: -crop.y * height
+            source: url
+            sourceSize: Qt.size(128, 128)
+            // Synchronous on purpose: Quickshell's image://icon provider calls
+            // QIcon::pixmap, which crashes the shell off the GUI thread.
+            asynchronous: false
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            mipmap: true
+            function measure() { if (status === Image.Ready) iconCrops.measure(icon, url) }
+            onStatusChanged: measure()
+            Component.onCompleted: measure()
+          }
         }
 
         Rectangle {
@@ -129,6 +153,10 @@ BarWidget {
         }
       }
     }
+  }
+
+  IconCrops {
+    id: iconCrops
   }
 
   Chooser {

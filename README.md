@@ -71,6 +71,10 @@ Actions go to Hyprland as Lua dispatches (`hl.dsp.focus`,
 `omarchy-hyprland-window-minimize`, so the dock and this widget agree on the
 state of every window.
 
+Icon themes draw app icons with different transparent margins. The widget
+measures each icon once and zooms it until its opaque square fills the slot,
+so every icon in the bar has the same visual size.
+
 Previews are a single `ScreencopyView` capture, taken when the chooser opens.
 Hyprland keeps drawing minimized windows, so they have previews too.
 
