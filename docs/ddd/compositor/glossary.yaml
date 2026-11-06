@@ -1,0 +1,20 @@
+context: compositor
+terms:
+  - { term: Window, definition: A toplevel surface that Hyprland manages., avoid: [Client, Toplevel], related: [Address] }
+  - { term: Address, definition: The identifier Hyprland gives a Window for its whole life., avoid: [Handle], related: [Window] }
+  - { term: App Id, definition: The class a Window reports; it names the app that owns the Window., avoid: [Class], related: [Window] }
+  - { term: Workspace, definition: A numbered set of Windows that Hyprland shows on one monitor at a time., avoid: [Desktop], related: [Workspace Id] }
+  - { term: Workspace Id, definition: The positive number of a Workspace., avoid: [], related: [Workspace] }
+  - { term: Minimized, definition: State of a Window that Omarchy moved to special:minimized and tagged with the Workspace it left., avoid: [Hidden], related: [Window, Workspace] }
+  - { term: Shown, definition: State of a Window on a numbered Workspace., avoid: [Visible], related: [Window] }
+  - { term: Window Opened, definition: Hyprland created a Window., avoid: [], related: [Window] }
+  - { term: Window Gone, definition: Hyprland destroyed a Window., avoid: [], related: [Window] }
+  - { term: Workspace Switched, definition: The active Workspace of a monitor changed., avoid: [], related: [Workspace] }
+  - { term: Focus Window, definition: Give a Shown Window the keyboard focus and raise it above the others., avoid: [Activate], related: [Window] }
+  - { term: Window Focused, definition: A Window received the keyboard focus., avoid: [], related: [Focus Window] }
+  - { term: Minimize Window, definition: Move a Window to special:minimized through Omarchy., avoid: [Hide], related: [Minimized] }
+  - { term: Window Minimized, definition: A Window became Minimized., avoid: [], related: [Minimize Window] }
+  - { term: Restore Window, definition: Bring a Minimized Window to the active Workspace and focus it., avoid: [Unminimize], related: [Minimized] }
+  - { term: Window Restored, definition: A Minimized Window became Shown again., avoid: [], related: [Restore Window] }
+  - { term: Close Window, definition: Ask the app of a Window to close it., avoid: [Kill], related: [Window] }
+  - { term: Window Close Requested, definition: The app of a Window received a close request., avoid: [], related: [Close Window] }

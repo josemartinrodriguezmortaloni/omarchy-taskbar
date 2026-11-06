@@ -1,0 +1,38 @@
+context: taskbar
+language: typescript
+status: approved
+approved_on: 2026-11-06
+aggregates:
+  - id: AG-01
+    name: App Group
+    root: EN-01
+    handles: [CM-04]
+    emits: [EV-05]
+    references: []
+    invariants:
+      - { id: INV-01, rule: An App Group holds only Windows that Belong Here., sources: [FR-01] }
+      - { id: INV-02, rule: A click on an App Group with several Windows opens the Window Chooser and asks for no window action., sources: [FR-05] }
+entities:
+  - { id: EN-01, name: App Group, aggregate: AG-01, identity: The App Id of its Windows., attributes: [VO-01] }
+value_objects:
+  - { id: VO-01, name: App Id, aggregate: AG-01, attributes: [value], validation: A non-empty app class. }
+  - { id: VO-02, name: Click Intent, aggregate: AG-01, attributes: [kind, window], validation: kind is one of choose, focus, minimize, restore; window is set unless kind is choose. }
+modules:
+  - { id: MD-01, name: model, path: src/taskbar/model, owns: [AG-01, EN-01, VO-01, VO-02, RM-01, RL-01], reason_for_change: Which windows show and what a click does, depends_on: [] }
+  - { id: MD-02, name: bar, path: src/taskbar/bar, owns: [], reason_for_change: Look of bar icons, depends_on: [MD-01, MD-03] }
+  - { id: MD-03, name: chooser, path: src/taskbar/chooser, owns: [], reason_for_change: Look of window previews, depends_on: [MD-01] }
+contracts:
+  - { id: CT-01, module: MD-03, signature: "open(group: AppGroup): WindowChooserOpened", serves: [CM-04] }
+  - { id: CT-02, module: MD-01, signature: "workspaceApps(windows: Window[], active: WorkspaceId): AppGroup[]", serves: [] }
+  - { id: CT-03, module: MD-01, signature: "clickIntent(group: AppGroup, focused: Address): ClickIntent", serves: [] }
+quality:
+  - { qr: QR-01, applies_to: [all] }
+  - { qr: QR-03, applies_to: [all] }
+  - { qr: QR-04, applies_to: [all] }
+  - { qr: QR-05, applies_to: [all] }
+  - { qr: QR-06, applies_to: [all] }
+  - { qr: QR-07, applies_to: [all] }
+  - { qr: QR-08, applies_to: [all] }
+checklist_review:
+  - { qr: QR-02, answer: One click reaches the Window of a one-Window App Group; the Window Chooser reaches any Window of a larger App Group with a second click. }
+  - { qr: QR-09, answer: "Previews capture once (live: false) when the Window Chooser opens; the HS-01 prototype measured the first frame at 190 ms for a minimized window." }

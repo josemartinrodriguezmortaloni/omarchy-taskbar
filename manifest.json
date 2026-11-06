@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "m4s1t4.taskbar",
+  "name": "Taskbar",
+  "version": "0.1.0",
+  "author": "m4s1t4",
+  "license": "MIT",
+  "description": "The apps of the active workspace in the bar, minimized windows included, with a window chooser for apps with several windows.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "src/taskbar/bar/Taskbar.qml"
+  },
+  "barWidget": {
+    "displayName": "Taskbar",
+    "description": "One icon per app of the active workspace. Click focuses, minimizes, or restores; middle click closes; an app with several windows opens a chooser with previews.",
+    "category": "Compositor",
+    "aliases": ["taskbar", "windows"],
+    "allowMultiple": false,
+    "defaultSection": "left"
+  }
+}

@@ -1,0 +1,41 @@
+subdomains:
+  - { id: SD-01, name: Window Switching, type: core, rationale: Bringing back any window of the workspace is why the plugin exists. }
+  - { id: SD-02, name: Compositor Integration, type: supporting, rationale: Needed to act on windows, but it only adapts Hyprland and Omarchy. }
+contexts:
+  - id: BC-01
+    slug: taskbar
+    name: Taskbar
+    subdomain: SD-01
+    responsibility: Shows the apps of the active workspace and turns each click into the right window action.
+    owns: { events: [EV-05], commands: [CM-04], policies: [], read_models: [RM-01] }
+    reasons_for_change:
+      - { change: Which windows show and what a click does, cause: User preference }
+      - { change: Look of bar icons and window previews, cause: Theme and visual taste }
+  - id: BC-02
+    slug: compositor
+    name: Compositor
+    subdomain: SD-02
+    responsibility: Reads windows from Hyprland and focuses, minimizes, restores, and closes them the way Omarchy expects.
+    owns: { events: [EV-01, EV-02, EV-03, EV-04, EV-06, EV-07, EV-08], commands: [CM-01, CM-02, CM-03, CM-05], policies: [], read_models: [] }
+    reasons_for_change:
+      - { change: Window dispatch syntax, cause: Hyprland releases }
+      - { change: Minimize convention, cause: Omarchy releases }
+relationships:
+  - id: RL-01
+    upstream: BC-02
+    downstream: BC-01
+    pattern: customer-supplier
+    upstream_role: published-language
+    downstream_role: conformist
+    via: [EV-01, EV-02, EV-03, EV-04, EV-07, EV-08, CM-01, CM-02, CM-03, CM-05]
+    contract: Compositor publishes each Window as address, app id, title, workspace id, and minimized-from workspace id, and takes window actions by address.
+    adr: null
+  - id: RL-02
+    upstream: EX-01
+    downstream: BC-02
+    pattern: upstream-downstream
+    upstream_role: open-host-service
+    downstream_role: anticorruption-layer
+    via: [EV-01, EV-07, EV-08]
+    contract: Hyprland reports toplevels with address, class, title, workspace, and tags through Quickshell, and takes Lua dispatches through hyprctl.
+    adr: null

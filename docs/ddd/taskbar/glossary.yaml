@@ -1,0 +1,12 @@
+context: taskbar
+terms:
+  - { term: Window, definition: A Window as the Compositor publishes it., avoid: [Client, Toplevel], related: [App Group] }
+  - { term: App Id, definition: The name of the app that owns a Window., avoid: [Class], related: [App Group] }
+  - { term: App Group, definition: The Windows of one App Id that belong to the active Workspace; one bar icon., avoid: [Button, Dock Item], related: [Window, App Id] }
+  - { term: Belongs Here, definition: A Window is on the active Workspace or was minimized from it., avoid: [], related: [App Group] }
+  - { term: Click Intent, definition: The window action a click on an App Group asks for., avoid: [], related: [App Group] }
+  - { term: Workspace Apps, definition: The App Groups of the active Workspace in stable order., avoid: [Taskbar Items], related: [App Group] }
+  - { term: Window Chooser, definition: A popup with one preview per Window of an App Group., avoid: [Picker, Switcher], related: [App Group, Preview] }
+  - { term: Preview, definition: A live capture of a Window, or its icon and title when no capture exists., avoid: [Thumbnail], related: [Window Chooser] }
+  - { term: Open Window Chooser, definition: Show the Window Chooser for an App Group with several Windows., avoid: [], related: [Window Chooser] }
+  - { term: Window Chooser Opened, definition: The Window Chooser is on screen., avoid: [], related: [Window Chooser] }

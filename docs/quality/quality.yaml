@@ -1,0 +1,93 @@
+product: omarchy-taskbar
+profile: ui-app
+stakeholders:
+  - { id: SH-01, name: Desktop User, role: user, needs: [Find and bring back any open window of the current workspace without the dock.] }
+  - { id: SH-02, name: Plugin Maintainer, role: developer, needs: [Adapt the plugin when Hyprland or Omarchy change how windows work.] }
+functional:
+  - { id: FR-01, statement: The user sees one bar icon per app that has windows on the active workspace or windows minimized from it., stakeholder: SH-01, priority: must }
+  - { id: FR-02, statement: The user restores a minimized window to the active workspace with one click., stakeholder: SH-01, priority: must }
+  - { id: FR-03, statement: The user focuses a window that is not focused with one click., stakeholder: SH-01, priority: must }
+  - { id: FR-04, statement: A click on the focused window minimizes it., stakeholder: SH-01, priority: must }
+  - { id: FR-05, statement: A click on an app with several windows opens a chooser with a preview of each window., stakeholder: SH-01, priority: must }
+  - { id: FR-06, statement: A middle click on a window closes it., stakeholder: SH-01, priority: should }
+characteristics:
+  - { key: functional-suitability, decision: necessary, reason: Losing a minimized window is the defect this plugin exists to remove. }
+  - { key: performance-efficiency, decision: desired, reason: Live previews cost GPU time; the chooser must still open without visible delay. }
+  - { key: compatibility, decision: necessary, reason: The plugin runs inside the Omarchy shell and depends on Hyprland and Omarchy window mechanics that change between releases. }
+  - { key: interaction-capability, decision: necessary, reason: The bar replaces the dock as the only way back to a minimized window. }
+  - { key: reliability, decision: desired, reason: A failed restore leaves a window hidden until the next session. }
+  - { key: security, decision: not-applicable, reason: Local widget with no network, no secrets, and previews kept in memory. }
+  - { key: maintainability, decision: necessary, reason: Hyprland dispatch syntax and Omarchy minimize conventions change between releases. }
+  - { key: flexibility, decision: not-applicable, reason: One user on one Omarchy install. }
+  - { key: safety, decision: not-applicable, reason: No physical risk. }
+quality:
+  - id: QR-01
+    characteristic: compatibility
+    subcharacteristic: co-existence
+    statement: The plugin passes the Omarchy shell plugin manifest validation.
+    stakeholder: SH-02
+    gate: true
+    measure: { tool: omarchy, command: omarchy plugin validate ., metric: manifest validation errors, threshold: "== 0" }
+  - id: QR-02
+    characteristic: interaction-capability
+    subcharacteristic: operability
+    statement: Every window of the active workspace, minimized or not, is reachable in at most two clicks.
+    stakeholder: SH-01
+    gate: false
+    checklist: With three terminals and one browser on a workspace, two terminals minimized, is every window reachable in at most two clicks?
+  - id: QR-03
+    characteristic: maintainability
+    subcharacteristic: modularity
+    statement: Every function has a cyclomatic complexity below 4.
+    stakeholder: SH-02
+    gate: true
+    measure: { tool: lizard, command: uvx --from lizard==1.24.1 lizard -C 3 -w -l typescript src, metric: functions with CCN > 3, threshold: "== 0" }
+  - id: QR-04
+    characteristic: maintainability
+    subcharacteristic: analysability
+    statement: Modules stay within the pass-through ratio limit.
+    stakeholder: SH-02
+    gate: true
+    measure: { tool: check-code, command: built-in, metric: pass-through ratio, threshold: "<= 20%" }
+  - id: QR-05
+    characteristic: maintainability
+    subcharacteristic: modularity
+    statement: Modules stay within the files per module limit.
+    stakeholder: SH-02
+    gate: true
+    measure: { tool: check-code, command: built-in, metric: files per module, threshold: "<= 10" }
+  - id: QR-06
+    characteristic: maintainability
+    subcharacteristic: modifiability
+    statement: Modules stay within the entry files per module limit.
+    stakeholder: SH-02
+    gate: true
+    measure: { tool: check-code, command: built-in, metric: entry files per module, threshold: "<= 3" }
+  - id: QR-07
+    characteristic: maintainability
+    subcharacteristic: modularity
+    statement: Modules stay within the module total CCN limit.
+    stakeholder: SH-02
+    gate: true
+    measure: { tool: check-code, command: built-in, metric: module total CCN, threshold: "<= 150" }
+  - id: QR-08
+    characteristic: functional-suitability
+    subcharacteristic: functional-completeness
+    statement: Every acceptance scenario has a passing test.
+    stakeholder: SH-01
+    gate: true
+    measure: { tool: check-code, command: "mkdir -p .validate && bun test --reporter=junit --reporter-outfile=.validate/junit.xml", report: .validate/junit.xml, metric: scenarios without a passing test, threshold: "== 0" }
+  - id: QR-09
+    characteristic: performance-efficiency
+    subcharacteristic: time-behaviour
+    statement: The window chooser shows its previews without a visible delay.
+    stakeholder: SH-01
+    gate: false
+    checklist: With four windows of one app, does the chooser show all previews without a visible delay?
+  - id: QR-10
+    characteristic: reliability
+    subcharacteristic: faultlessness
+    statement: A minimized window always comes back from the bar.
+    stakeholder: SH-01
+    gate: false
+    checklist: After minimizing, switching workspaces, and reloading Hyprland, does every minimized window come back from the bar?

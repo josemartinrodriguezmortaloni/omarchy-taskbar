@@ -1,0 +1,54 @@
+context: compositor
+language: typescript
+status: approved
+approved_on: 2026-11-06
+aggregates:
+  - id: AG-01
+    name: Window
+    root: EN-01
+    handles: [CM-01, CM-02, CM-03, CM-05]
+    emits: [EV-01, EV-02, EV-03, EV-04, EV-06, EV-07]
+    references: [AG-02]
+    lifecycle:
+      states: [Shown, Minimized]
+      initial: Shown
+      transitions:
+        - { from: Shown, to: Minimized, command: CM-02 }
+        - { from: Minimized, to: Shown, command: CM-03 }
+    invariants:
+      - { id: INV-01, rule: A Minimized Window keeps the Workspace Id it left., sources: [FR-02] }
+      - { id: INV-02, rule: Focus Window never acts on a Minimized Window., sources: [FR-03] }
+  - id: AG-02
+    name: Workspace
+    root: EN-02
+    handles: []
+    emits: [EV-08]
+    references: []
+    invariants: []
+entities:
+  - { id: EN-01, name: Window, aggregate: AG-01, identity: Address assigned by Hyprland when the Window opens., attributes: [VO-01, VO-02, VO-03] }
+  - { id: EN-02, name: Workspace, aggregate: AG-02, identity: Workspace Id assigned by Hyprland., attributes: [VO-03] }
+value_objects:
+  - { id: VO-01, name: Address, aggregate: AG-01, attributes: [value], validation: A hexadecimal string that starts with 0x. }
+  - { id: VO-02, name: App Id, aggregate: AG-01, attributes: [value], validation: A non-empty app class. }
+  - { id: VO-03, name: Workspace Id, aggregate: AG-02, attributes: [value], validation: A positive integer. }
+modules:
+  - { id: MD-01, name: window, path: src/compositor/window, owns: [AG-01, EN-01, VO-01, VO-02, AG-02, EN-02, VO-03, RL-01, RL-02], reason_for_change: Window fields Hyprland reports, depends_on: [] }
+  - { id: MD-02, name: dispatch, path: src/compositor/dispatch, owns: [], reason_for_change: Window dispatch syntax, depends_on: [MD-01] }
+  - { id: MD-03, name: minimize, path: src/compositor/minimize, owns: [], reason_for_change: Minimize convention, depends_on: [MD-01, MD-02] }
+contracts:
+  - { id: CT-01, module: MD-02, signature: "focus(window: Window): WindowFocused", serves: [CM-01] }
+  - { id: CT-02, module: MD-03, signature: "minimize(window: Window): WindowMinimized", serves: [CM-02] }
+  - { id: CT-03, module: MD-03, signature: "restore(window: Window, to: WorkspaceId): WindowRestored", serves: [CM-03] }
+  - { id: CT-04, module: MD-02, signature: "close(window: Window): WindowCloseRequested", serves: [CM-05] }
+  - { id: CT-05, module: MD-01, signature: "toWindow(toplevel: HyprlandToplevel): Window", serves: [] }
+quality:
+  - { qr: QR-01, applies_to: [all] }
+  - { qr: QR-03, applies_to: [all] }
+  - { qr: QR-04, applies_to: [all] }
+  - { qr: QR-05, applies_to: [all] }
+  - { qr: QR-06, applies_to: [all] }
+  - { qr: QR-07, applies_to: [all] }
+  - { qr: QR-08, applies_to: [all] }
+checklist_review:
+  - { qr: QR-10, answer: The Minimized state lives in the Omarchy window tag omarchy-minimized-from-<id>, which survives reloads (HS-02), and restore uses the same dispatch steps as the dock. }

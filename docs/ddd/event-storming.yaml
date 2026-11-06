@@ -1,0 +1,26 @@
+actors:
+  - { id: AC-01, name: Desktop User, stakeholder: SH-01 }
+external_systems:
+  - { id: EX-01, name: Hyprland, emits: [EV-01, EV-07, EV-08] }
+events:
+  - { id: EV-01, name: Window Opened, pivotal: false, sources: [FR-01] }
+  - { id: EV-02, name: Window Minimized, pivotal: true, sources: [FR-04] }
+  - { id: EV-03, name: Window Restored, pivotal: true, sources: [FR-02] }
+  - { id: EV-04, name: Window Focused, pivotal: false, sources: [FR-03] }
+  - { id: EV-05, name: Window Chooser Opened, pivotal: false, sources: [FR-05] }
+  - { id: EV-06, name: Window Close Requested, pivotal: false, sources: [FR-06] }
+  - { id: EV-07, name: Window Gone, pivotal: false, sources: [FR-01] }
+  - { id: EV-08, name: Workspace Switched, pivotal: false, sources: [FR-01] }
+commands:
+  - { id: CM-01, name: Focus Window, issued_by: AC-01, reads: [RM-01], emits: [EV-04] }
+  - { id: CM-02, name: Minimize Window, issued_by: AC-01, reads: [RM-01], emits: [EV-02] }
+  - { id: CM-03, name: Restore Window, issued_by: AC-01, reads: [RM-01], emits: [EV-03] }
+  - { id: CM-04, name: Open Window Chooser, issued_by: AC-01, reads: [RM-01], emits: [EV-05] }
+  - { id: CM-05, name: Close Window, issued_by: AC-01, reads: [RM-01], emits: [EV-06] }
+policies: []
+read_models:
+  - { id: RM-01, name: Workspace Apps, built_from: [EV-01, EV-02, EV-03, EV-04, EV-07, EV-08] }
+timeline: [EV-08, EV-01, EV-04, EV-02, EV-05, EV-03, EV-06, EV-07]
+hotspots:
+  - { id: HS-01, question: Does a preview capture a window minimized to special:minimized?, about: [EV-05], status: resolved, resolution: "Yes. Prototype on 2026-11-06 (Quickshell 0.3.2, ScreencopyView on the Wayland toplevel): first frame after 190 ms at full size, and frames keep updating while the window stays minimized." }
+  - { id: HS-02, question: Does Hyprland keep a minimized window's tags across a config reload?, about: [EV-02, EV-03], status: resolved, resolution: Yes. workspace-modes.lua stores mode state in window tags because tags survive reloads. }
