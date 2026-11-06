@@ -1,128 +1,114 @@
-# Taskbar for Omarchy
+```
+ $pLLLLLLL##LLLLLLLp$
+ ${+000000MQ   ~00+{$
+ ${{$            ${{$
+ ${{$            ${{$          Taskbar for the Omarchy shell. Minimized windows come back in one click.
+ $zz$            ${{$
+ $vv$            ${{$          omarchy plugin add https://github.com/josemartinrodriguezmortaloni/omarchy-taskbar.git
+ ${{$            ${{$
+ ${{$            ${{$          ⚠ Status: tested on Omarchy Quattro. Plugins run unsandboxed: read the code first.
+ ${~LLLLLL##LLLLLL~{$
+ $b0000000MQ 000000b$
+```
 
-A bar widget for the [Omarchy](https://omarchy.org) shell that shows the apps of
-the active workspace, minimized windows included. Use it in place of the Omarchy
-dock on floating workspaces.
+omarchy-taskbar is a bar widget for the [Omarchy](https://omarchy.org) shell. It shows one icon per app of the active workspace, minimized windows included, and replaces the Omarchy dock on floating workspaces. An app with several windows opens a chooser with a preview of each window.
 
-- One icon per app on the active workspace of each monitor.
-- Minimized windows stay in the bar with a dimmed icon, and one click brings
-  them back.
-- An app with several windows opens a chooser with a preview of each window.
-- A line under the icon marks the app that has the focus.
+## Highlights
 
-## Requirements
+- **Minimized windows stay visible:** a dimmed icon marks them, and one click restores them to the active workspace
+- **Window chooser:** an app with several windows opens a card with a preview of each window, minimized ones included
+- **Same as the dock:** minimizing and restoring use Omarchy's own mechanism, so the dock and the bar agree on every window
+- **Even icons:** each icon is measured once and zoomed until its opaque part fills the slot, whatever margin its theme draws
 
-- Omarchy with the Quickshell-based Omarchy shell and the Hyprland Lua config.
-- Quickshell 0.3 or later (it ships with Omarchy).
-
-Minimizing uses Omarchy's own `omarchy-hyprland-window-minimize`, which works
-only on floating workspaces. On a tiled workspace, a click on the focused window
-does nothing.
+<p>
+  <a href="https://omarchy.org"><img alt="Omarchy Quattro" src="https://img.shields.io/badge/OMARCHY-QUATTRO-0a0a0a.svg?style=for-the-badge&amp;labelColor=000000" height="28"></a>
+  <a href="https://hypr.land"><img alt="Hyprland" src="https://img.shields.io/badge/HYPRLAND-LUA-0a0a0a.svg?style=for-the-badge&amp;logo=hyprland&amp;labelColor=000000" height="28"></a>
+  <a href="https://quickshell.org"><img alt="Quickshell" src="https://img.shields.io/badge/QUICKSHELL-0.3-0a0a0a.svg?style=for-the-badge&amp;labelColor=000000" height="28"></a>
+  <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/LICENSE-MIT-0a0a0a.svg?style=for-the-badge&amp;labelColor=000000" height="28"></a>
+  <a href="https://github.com/josemartinrodriguezmortaloni/omarchy-taskbar/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/josemartinrodriguezmortaloni/omarchy-taskbar.svg?style=for-the-badge&amp;labelColor=000000" height="28"></a>
+</p>
 
 ## Install
 
-```sh
+The plugin needs Omarchy with the Quickshell-based Omarchy shell and the Hyprland Lua config (Omarchy Quattro). The built files are in the repo, so it needs no build step.
+
+```bash
 omarchy plugin add https://github.com/josemartinrodriguezmortaloni/omarchy-taskbar.git --enable
 ```
 
-The command asks where to put the widget in the bar. The default section is
-`left`. To move the widget later:
+The command asks where to put the widget in the bar; the default section is `left`.
 
-```sh
-omarchy bar move m4s1t4.taskbar --section left --after omarchy.workspaces
-```
+## Get started
 
-To replace the dock, turn it off:
-
-```sh
-omarchy plugin disable omarchy.dock
+```bash
+omarchy plugin disable omarchy.dock                                        # the bar replaces the dock
+omarchy bar move m4s1t4.taskbar --section left --after omarchy.workspaces  # move the widget
+omarchy plugin update m4s1t4.taskbar                                       # update
+omarchy plugin remove m4s1t4.taskbar && omarchy plugin enable omarchy.dock # uninstall, dock back
 ```
 
 ## Usage
 
-| Action | Result |
-|---|---|
-| Click an app with one window | Focuses the window. Minimizes it if it already has the focus. Restores it if it is minimized. |
-| Click an app with several windows | Opens the window chooser. |
-| Click a preview in the chooser | Same as a click on an app with one window, for that window. |
-| Middle click an app with one window | Closes the window. |
-| Middle click a preview | Closes that window. |
-| Click outside the chooser | Closes the chooser. |
+| Action                              | Result                                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------- |
+| Click an app with one window        | Focuses the window. Minimizes it when it has the focus. Restores it when it is minimized.   |
+| Click an app with several windows   | Opens the window chooser                                                                    |
+| Click a preview in the chooser      | Same as a click on an app with one window, for that window                                  |
+| Middle click an app with one window | Closes the window                                                                           |
+| Middle click a preview              | Closes that window                                                                          |
+| Click outside the chooser           | Closes the chooser                                                                          |
 
-A restored window comes back to the active workspace, as with the Omarchy dock.
+A line under an icon marks the app with the focus. A restored window comes back to the active workspace, as with the dock.
 
-## Update and uninstall
-
-```sh
-omarchy plugin update m4s1t4.taskbar
-omarchy plugin remove m4s1t4.taskbar
-omarchy plugin enable omarchy.dock   # bring the dock back
-```
+Minimizing calls Omarchy's `omarchy-hyprland-window-minimize`, which works only on floating workspaces. On a tiled workspace, a click on the focused window does nothing.
 
 ## How it works
 
-The widget reads windows from Quickshell's Hyprland integration. A window is
-minimized when Omarchy has moved it to `special:minimized`. Omarchy tags it with
-`omarchy-minimized-from-<workspace>`, and the widget uses that tag to show the
-window on the workspace it left.
+- **Windows:** the widget reads them from Quickshell's Hyprland integration. A window is minimized when Omarchy has moved it to `special:minimized`; its tag `omarchy-minimized-from-<workspace>` puts it on the workspace it left.
+- **Actions:** focus, restore and close go to Hyprland as Lua dispatches (`hl.dsp.focus`, `hl.dsp.window.move`, `hl.dsp.window.close`). Minimize calls the Omarchy script.
+- **Previews:** one `ScreencopyView` capture when the chooser opens. Hyprland keeps drawing minimized windows, so they have previews too.
+- **Icons:** each icon loads on the GUI thread, gets grabbed once, and is zoomed by the square around its opaque pixels. Reloading `image://icon` off the GUI thread crashes the shell in `QIcon::pixmap`.
 
-Actions go to Hyprland as Lua dispatches (`hl.dsp.focus`,
-`hl.dsp.window.move`, `hl.dsp.window.close`). Minimizing calls
-`omarchy-hyprland-window-minimize`, so the dock and this widget agree on the
-state of every window.
+## Development
 
-Icon themes draw app icons with different transparent margins. The widget
-measures each icon once and zooms it until its opaque square fills the slot,
-so every icon in the bar has the same visual size.
+The logic is TypeScript in `src/`. `bun build` compiles each module to an `.mjs` file next to it, and the QML files import those. Commit the `.mjs` files with the change.
 
-Previews are a single `ScreencopyView` capture, taken when the chooser opens.
-Hyprland keeps drawing minimized windows, so they have previews too.
+| Path                     | Holds                                         |
+| ------------------------ | --------------------------------------------- |
+| `src/compositor/window`  | Hyprland toplevel to Window                   |
+| `src/compositor/dispatch`| Focus and close dispatches                    |
+| `src/compositor/minimize`| Omarchy minimize and restore                  |
+| `src/taskbar/model`      | Which windows show, and what a click does     |
+| `src/taskbar/bar`        | The bar widget (entry point) and icon sizing  |
+| `src/taskbar/chooser`    | The window chooser                            |
+| `docs/`                  | Quality requirements and domain design        |
 
-## Develop
+Link a clone into the plugins folder to work on it:
 
-The logic is TypeScript in `src/`. `bun build` compiles each module to an `.mjs`
-file next to it, and the QML files import those. The built `.mjs` files are
-committed, so `omarchy plugin add` works without Bun.
-
-```
-src/
-  compositor/   Hyprland and Omarchy window mechanics
-    window/     Hyprland toplevel -> Window
-    dispatch/   focus and close dispatches
-    minimize/   Omarchy minimize and restore
-  taskbar/
-    model/      which windows show, and what a click does
-    bar/        the bar widget (entry point)
-    chooser/    the window chooser
-docs/           quality requirements and domain design
-```
-
-| Command | Checks |
-|---|---|
-| `bun install` | Installs TypeScript and the Bun types |
-| `bun test` | Acceptance scenarios from `docs/ddd/*/scenarios.feature` |
-| `bun run typecheck` | TypeScript |
-| `bun run complexity` | Every function has a cyclomatic complexity of 3 or less |
-| `bun run build` | Rebuilds the `.mjs` files |
-| `omarchy plugin validate .` | The Omarchy plugin manifest |
-
-To develop from a clone, link it into the plugins folder:
-
-```sh
+```bash
+git clone https://github.com/josemartinrodriguezmortaloni/omarchy-taskbar.git && cd omarchy-taskbar
+bun install
 ln -s "$PWD" ~/.config/omarchy/plugins/m4s1t4.taskbar
 omarchy plugin enable m4s1t4.taskbar --section left
 ```
 
-After each change, run `omarchy restart shell`. The shell hot-reloads plugins
-with `inotifywait -r`, which does not follow a symlink.
+Run `omarchy restart shell` after each change: the shell hot-reloads plugins with `inotifywait -r`, which does not follow a symlink.
 
-Two constraints of the QML JavaScript engine:
+Gate every change before a commit:
 
-- It has no object spread (`{ ...x }`), and `bun build` does not lower syntax.
-  Use `Object.assign`.
-- `omarchy plugin validate` rejects symlinks in the plugin folder. The
-  `postinstall` script removes `node_modules/.bin`.
+| Command                     | Checks                                                  |
+| --------------------------- | ------------------------------------------------------- |
+| `bun test`                  | Acceptance scenarios of `docs/ddd/*/scenarios.feature`  |
+| `bun run typecheck`         | TypeScript                                              |
+| `bun run complexity`        | Cyclomatic complexity of 3 or less in every function    |
+| `bun run build`             | Rebuilds the `.mjs` files                               |
+| `omarchy plugin validate .` | The Omarchy plugin manifest                             |
 
-## License
+Two limits of the QML JavaScript engine shape the code:
 
-MIT
+- **No object spread:** QML has no `{ ...x }`, and `bun build` does not lower syntax. Use `Object.assign`.
+- **No symlinks:** `omarchy plugin validate` rejects them in the plugin folder, so `postinstall` removes `node_modules/.bin`.
+
+## Credits
+
+Built for [Omarchy](https://omarchy.org) and its Quickshell-based shell. The restore steps follow the Omarchy dock. MIT license.
